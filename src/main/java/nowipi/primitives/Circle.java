@@ -13,4 +13,21 @@ public final class Circle {
         this.center = center;
         this.radius = radius;
     }
+
+    public float diameter() {
+        return radius * 2;
+    }
+
+    @Override
+    public String toString() {
+        return "Circle{" +
+                "center=" + center +
+                ", radius=" + radius +
+                '}';
+    }
+
+    public Rectangle toRectangle() {
+        float diameter = diameter();
+        return Rectangle.fromCenter(center, diameter, diameter);
+    }
 }

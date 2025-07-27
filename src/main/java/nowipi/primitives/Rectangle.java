@@ -1,14 +1,31 @@
 package nowipi.primitives;
 
-public final class Rectangle extends Quad {
+public final class Rectangle implements Quad {
+
+    public Vector2f topLeft;
+    public Vector2f topRight;
+    public Vector2f bottomRight;
+    public Vector2f bottomLeft;
+
+    public Rectangle(Vector2f topLeft, Vector2f topRight, Vector2f bottomRight, Vector2f bottomLeft) {
+        this.topLeft = topLeft;
+        this.topRight = topRight;
+        this.bottomRight = bottomRight;
+        this.bottomLeft = bottomLeft;
+    }
+
+    public Rectangle(Vector2f a, Vector2f b, float offset) {
+        this(
+                a,
+                b,
+                Vector2f.newClockWisePerpendicular(a, b).normalize().mul(offset).add(a),
+                Vector2f.newClockWisePerpendicular(a, b).normalize().mul(offset).add(b)
+
+        );
+    }
 
     public Rectangle(float left, float right, float top, float bottom) {
-        super(
-                new Vector2f(left, top),
-                new Vector2f(right, top),
-                new Vector2f(left, bottom),
-                new Vector2f(right, bottom)
-        );
+        this(new Vector2f(left, top), new Vector2f(right, top), new Vector2f(right, bottom), new Vector2f(left, bottom));
     }
 
     public static Rectangle fromTopLeft(Vector2f topLeft, Vector2f size) {
@@ -23,6 +40,20 @@ public final class Rectangle extends Quad {
                 left + width,
                 top,
                 top - height);
+    }
+
+    public static Rectangle fromBottomLeft(Vector2f bottomLeft, Vector2f size) {
+        return fromBottomLeft(bottomLeft.x, bottomLeft.y, size.x, size.y);
+    }
+    public static Quad fromBottomLeft(Vector2f bottomLeft, float width, float height) {
+        return fromBottomLeft(bottomLeft.x, bottomLeft.y, width, height);
+    }
+    public static Rectangle fromBottomLeft(float left, float bottom, float width, float height) {
+        return new Rectangle(
+                left,
+                left + width,
+                bottom + height,
+                bottom);
     }
 
     public static Rectangle fromCenter(Vector2f center, Vector2f size) {
@@ -50,4 +81,8 @@ public final class Rectangle extends Quad {
         return Math.abs(topLeft.y - bottomLeft.y);
     }
 
+    @Override
+    public Vertices vertices() {
+        return new Vertices(topLeft, topRight, bottomRight, bottomLeft);
+    }
 }

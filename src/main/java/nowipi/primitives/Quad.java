@@ -1,16 +1,34 @@
 package nowipi.primitives;
 
-public class Quad {
+import java.util.Iterator;
 
-    public Vector2f topLeft;
-    public Vector2f topRight;
-    public Vector2f bottomLeft;
-    public Vector2f bottomRight;
+public interface Quad {
 
-    public Quad(Vector2f topLeft, Vector2f topRight, Vector2f bottomLeft, Vector2f bottomRight) {
-        this.topLeft = topLeft;
-        this.topRight = topRight;
-        this.bottomLeft = bottomLeft;
-        this.bottomRight = bottomRight;
+    record Vertices(Vector2f a, Vector2f b, Vector2f c, Vector2f d) implements Iterable<Vector2f> {
+        @Override
+        public Iterator<Vector2f> iterator() {
+            return new Iterator<>() {
+
+                private int cursor = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return cursor < 4;
+                }
+
+                @Override
+                public Vector2f next() {
+                    return switch (cursor++) {
+                        case 0 -> a;
+                        case 1 -> b;
+                        case 2 -> c;
+                        case 3 -> d;
+                        default -> throw new IllegalStateException("Unexpected value: " + cursor);
+                    };
+                }
+            };
+        }
     }
+
+    Vertices vertices();
 }
