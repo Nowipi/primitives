@@ -57,10 +57,10 @@ public final class Rectangle implements Quad {
     }
 
     public static Rectangle fromCenter(Vector2f center, Vector2f size) {
-        return fromTopLeft(center.x, center.y, size.x, size.y);
+        return fromCenter(center.x, center.y, size.x, size.y);
     }
     public static Rectangle fromCenter(Vector2f center, float width, float height) {
-        return fromTopLeft(center.x, center.y, width, height);
+        return fromCenter(center.x, center.y, width, height);
     }
     public static Rectangle fromCenter(float centerX, float centerY, float width, float height) {
         float halfWidth = width / 2;
