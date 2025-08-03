@@ -18,9 +18,8 @@ public final class Rectangle implements Quad {
         this(
                 a,
                 b,
-                Vector2f.newClockWisePerpendicular(a, b).normalize().mul(offset).add(a),
-                Vector2f.newClockWisePerpendicular(a, b).normalize().mul(offset).add(b)
-
+                Vector2f.newClockWisePerpendicular(a, b).normalize().mul(offset).add(b),
+                Vector2f.newClockWisePerpendicular(a, b).normalize().mul(offset).add(a)
         );
     }
 
