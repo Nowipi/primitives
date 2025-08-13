@@ -63,8 +63,20 @@ public final class Vector2f {
         return this;
     }
 
+    public float squaredLength() {
+        return (x * x) + (y * y);
+    }
+
     public float length() {
-        return (float) Math.sqrt(x * x + y * y);
+        return (float) Math.sqrt(squaredLength());
+    }
+
+    public float dot(Vector2f v) {
+        return dot(this, v);
+    }
+
+    public static float dot(Vector2f a, Vector2f b) {
+        return a.x * b.x + a.y * b.y;
     }
 
     public Vector2f normalize() {

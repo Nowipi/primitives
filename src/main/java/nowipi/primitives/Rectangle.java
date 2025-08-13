@@ -1,30 +1,34 @@
 package nowipi.primitives;
 
-public final class Rectangle implements Quad {
+/**
+ * {P,P+u,P+u+v,P+v}
+ * ⟨u,v⟩ = 0
+ */
+public class Rectangle implements Quad {
 
-    public Vector2f topLeft;
-    public Vector2f topRight;
-    public Vector2f bottomRight;
-    public Vector2f bottomLeft;
+    private static final float EPSILON = 1e-6f;
 
-    public Rectangle(Vector2f topLeft, Vector2f topRight, Vector2f bottomRight, Vector2f bottomLeft) {
-        this.topLeft = topLeft;
-        this.topRight = topRight;
-        this.bottomRight = bottomRight;
-        this.bottomLeft = bottomLeft;
+    public final Vector2f a;
+    public final Vector2f b;
+    public final Vector2f c;
+    public final Vector2f d;
+
+    public Rectangle(Vector2f p, Vector2f u, Vector2f v) {
+        if (Math.abs(u.dot(v)) > EPSILON) {
+            throw new IllegalArgumentException("u and v must be perpendicular");
+        }
+        if (u.squaredLength() == 0 || v.squaredLength() == 0) {
+            throw new IllegalArgumentException("u and v must be non-zero");
+        }
+
+        this.a = p;
+        this.b = Vector2f.add(p, u);
+        this.c = Vector2f.add(p, u).add(v);
+        this.d = Vector2f.add(p, v);
     }
 
-    public Rectangle(Vector2f a, Vector2f b, float offset) {
-        this(
-                a,
-                b,
-                Vector2f.newClockWisePerpendicular(a, b).normalize().mul(offset).add(b),
-                Vector2f.newClockWisePerpendicular(a, b).normalize().mul(offset).add(a)
-        );
-    }
-
-    public Rectangle(float left, float right, float top, float bottom) {
-        this(new Vector2f(left, top), new Vector2f(right, top), new Vector2f(right, bottom), new Vector2f(left, bottom));
+    public static Rectangle fromAxisAligned(float left, float right, float top, float bottom) {
+        return new Rectangle(new Vector2f(left, top), new Vector2f(right - left, 0), new Vector2f(0, bottom - top));
     }
 
     public static Rectangle fromTopLeft(Vector2f topLeft, Vector2f size) {
@@ -34,7 +38,7 @@ public final class Rectangle implements Quad {
         return fromTopLeft(topLeft.x, topLeft.y, width, height);
     }
     public static Rectangle fromTopLeft(float left, float top, float width, float height) {
-        return new Rectangle(
+        return fromAxisAligned(
                 left,
                 left + width,
                 top,
@@ -48,7 +52,7 @@ public final class Rectangle implements Quad {
         return fromBottomLeft(bottomLeft.x, bottomLeft.y, width, height);
     }
     public static Rectangle fromBottomLeft(float left, float bottom, float width, float height) {
-        return new Rectangle(
+        return fromAxisAligned(
                 left,
                 left + width,
                 bottom + height,
@@ -64,7 +68,7 @@ public final class Rectangle implements Quad {
     public static Rectangle fromCenter(float centerX, float centerY, float width, float height) {
         float halfWidth = width / 2;
         float halfHeight = height / 2;
-        return new Rectangle(
+        return fromAxisAligned(
                 centerX - halfWidth,
                 centerX + halfWidth,
                 centerY + halfHeight,
@@ -72,16 +76,20 @@ public final class Rectangle implements Quad {
         );
     }
 
+    public float area() {
+        return width() * height();
+    }
+
     public float width() {
-        return Math.abs(topLeft.x - topRight.x);
+        return Vector2f.sub(b, a).length();
     }
 
     public float height() {
-        return Math.abs(topLeft.y - bottomLeft.y);
+        return Vector2f.sub(d, a).length();
     }
 
     @Override
     public Vertices vertices() {
-        return new Vertices(topLeft, topRight, bottomRight, bottomLeft);
+        return new Vertices(a, b, c, d);
     }
 }
